@@ -10,24 +10,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(schema = "cryptodash",  name = "userdetails")
-public class UserDetails {
-	
+@Table(schema="cryptodash", name="userlogin")
+public class UserLogin {
 	@Id
-	@Column(name = "username")
+	@Column(name="username")
 	private String username;
 	
-	@Column(name = "firstname")
-	private String firstname;
+	@Column(name="password")
+	private String passsword;
 	
-	@Column(name = "lastname")
-	private String lastname;
-	
-	@Column(name = "email")
-	private String email;
-
-
+	@Column(name="loggedin")
+	private boolean loggedIn;
 }

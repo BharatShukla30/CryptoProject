@@ -1,5 +1,6 @@
 package com.crypto.dashboard.Controller;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.crypto.dashboard.Entity.UserDetails;
 import com.crypto.dashboard.Entity.UserLogin;
-import com.crypto.dashboard.Repository.UserDetailsRepository;
-import com.crypto.dashboard.Repository.UserLoginRepository;
+import com.crypto.dashboard.Service.LoginSignupService;
+import com.crypto.dashboard.Service.LoginSignupServiceImpl;
 import com.crypto.dashboard.Service.Message;
 import com.crypto.dashboard.dto.UserInfo;
 
@@ -24,17 +25,14 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "${allowed.cors.origins}", allowedHeaders = "${allowed.cors.headers}")
 @RequestMapping("/user-data")
 @RestController
-public class UserDetailsController {
+public class UserManagementController {
 	
-	@Autowired
-	private UserDetailsRepository userDetailsRepo;
-	
-	@Autowired
-	private UserLoginRepository userLoginRepo;
+	@Autowired 
+	LoginSignupService loginSignupService ;
 	
 	@GetMapping(value="/getuser")
 	public ResponseEntity<Object> getUserData(@RequestParam("username") String userName){
-		UserDetails userDetailsRow = userDetailsRepo.findByUsername(userName);
+		UserDetails userDetailsRow = loginSignupService.getUserDetails(userName);
 		return new ResponseEntity<>(userDetailsRow, HttpStatus.ACCEPTED);
 	}
 	@PostMapping(value="/saveuser")
@@ -44,16 +42,17 @@ public class UserDetailsController {
 		userDetails.setFirstname(userInfo.getFirstname());
 		userDetails.setLastname(userInfo.getLastname());
 		userDetails.setUsername(userInfo.getUsername());
-		userDetailsRepo.save(userDetails);
 		
 		UserLogin userLogin = new UserLogin();
-		String password = userInfo.getPassword();
+		String password = BCrypt.hashpw(userInfo.getPassword(), BCrypt.gensalt());
 		userLogin.setUsername(userInfo.getUsername());
 		userLogin.setPasssword(password);
 		userLogin.setLoggedIn(false); 
-		userLoginRepo.save(userLogin);
 		
-		return new ResponseEntity<>(new Message("User saved successfully"), HttpStatus.ACCEPTED);
+		String msg = loginSignupService.saveUserDetails(userDetails, userLogin);
+		
+		return new ResponseEntity<>(new Message(msg), HttpStatus.ACCEPTED);
 	}
+	
 	
 }

@@ -17,6 +17,7 @@ import com.crypto.dashboard.Entity.UserLogin;
 import com.crypto.dashboard.Service.LoginSignupService;
 import com.crypto.dashboard.Service.LoginSignupServiceImpl;
 import com.crypto.dashboard.Service.Message;
+import com.crypto.dashboard.dto.LoginInfo;
 import com.crypto.dashboard.dto.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,26 @@ public class UserManagementController {
 		String msg = loginSignupService.saveUserDetails(userDetails, userLogin);
 		
 		return new ResponseEntity<>(new Message(msg), HttpStatus.ACCEPTED);
+	}
+	@PostMapping(value="/login")
+	public ResponseEntity<Object> verifyLogin(@RequestBody LoginInfo logininfo){
+		UserLogin userLogin = loginSignupService.CheckEmail(logininfo.getUserName());
+		if(userLogin != null)
+		{
+			if(BCrypt.checkpw(logininfo.getUserPassword(), userLogin.getPasssword()))
+			{
+				return new ResponseEntity<>(new Message("Login successful!"),HttpStatus.ACCEPTED);
+			}
+			else {
+				return new ResponseEntity<>(new Message("wrong password"),HttpStatus.UNAUTHORIZED);
+			}
+		}
+		else
+		{
+			return new ResponseEntity<>(new Message("wrong username"),HttpStatus.UNAUTHORIZED);
+		}
+		
+		
 	}
 	
 	

@@ -8,6 +8,7 @@ import com.crypto.dashboard.Entity.UserDetails;
 import com.crypto.dashboard.Entity.UserLogin;
 import com.crypto.dashboard.Repository.UserDetailsRepository;
 import com.crypto.dashboard.Repository.UserLoginRepository;
+import com.crypto.dashboard.dto.LoginInfo;
 
 @Component
 @Service
@@ -34,6 +35,14 @@ public class LoginSignupServiceImpl implements LoginSignupService {
 	@Override
 	public UserDetails getUserDetails(String userName) {
 		return userDetailsRepo.findByUsername(userName);
+	}
+	
+	//if username matches any user in db then return the object of userlogin else return null
+	@Override
+	public UserLogin CheckEmail(String userName) {
+		UserLogin ul = userLoginRepo.findByUsername(userName);
+		
+		return ul;
 	}
 	
 	

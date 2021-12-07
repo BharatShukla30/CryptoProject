@@ -7,5 +7,5 @@ import com.crypto.dashboard.Entity.UserLogin;
 
 @Repository
 public interface UserLoginRepository extends JpaRepository<UserLogin, String>{
-
+	UserLogin findByUsername(String userName);
 }
